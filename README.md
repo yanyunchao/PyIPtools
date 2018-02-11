@@ -59,4 +59,4 @@ to be continued
 
 ## Author
 
-iptools is developed and maintained by yanyunchao@vip.qq.com.
+PyIPtool is developed and maintained by yanyunchao@vip.qq.com.
