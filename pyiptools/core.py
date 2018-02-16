@@ -55,7 +55,7 @@ class CIDR(object):
     CIDR, 解释见 https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
 
     cidr = CIDR('10.10.10.10/16')
-    
+
     cidr = CIDR('10.10.10.10/255.255.0.0')
     """
     def __init__(self, ip_mask):
@@ -283,6 +283,7 @@ def ipv4_format(ipv4_str, ftype='b', **kwargs):
 
     :param ipv4_str:
     :param ftype:
+
         int: 一个整数
         b: 二进制
         o: 八进制
