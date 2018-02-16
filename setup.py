@@ -11,6 +11,7 @@ setup(
     author=author,
     packages=['pyiptools'],
     description='Tools for IP calculation',
+    requires=['six'],
     keywords=['IP', 'calculation'],
     classifiers=[
         'Development Status :: 3 - Alpha ',

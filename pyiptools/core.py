@@ -2,6 +2,15 @@
 
 from __future__ import unicode_literals
 
+from pyiptools.utils import int
+
+
+private_ipv4_classes = (
+    '10.0.0.0/8',
+    '172.16.0.0/12',
+    '192.168.0.0/16',
+)
+
 
 class IPV4(object):
     """
@@ -44,33 +53,48 @@ class IPV4(object):
 class CIDR(object):
     """
     CIDR, 解释见 https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
+
+    cidr = CIDR('10.10.10.10/16')
+    cidr = CIDR('10.10.10.10/255.255.0.0')
     """
     def __init__(self, ip_mask):
         self.ip, self.mask_code = self.check(ip_mask)
 
     @staticmethod
     def check(ip_mask):
-        sub_net_ip, mask_code = ip_mask.split('/')
+        sub_net_ip, mask = ip_mask.split('/')
 
         ip = IPV4(sub_net_ip)
-        mask_code = int(mask_code)
+        try:
+            mask_code = int(mask)
+        except ValueError:
+            mask_code = subnet_mask_to_cidr_mask(mask)
         if 0 <= mask_code <= 32:
             return ip.ip_str, mask_code
         raise ValueError('%s is not a valid cidr.' % ip_mask)
 
     @property
     def subnet(self):
+        """
+        网络
+        :return:
+        """
         try:
             return self._subnet
         except AttributeError:
             self._subnet = convert_to_ipv4(
-                ipv4_format(self.ip, ftype='int') & _cidr_mask_to_ip_int(self.mask_code),
+                ipv4_format(self.ip, ftype='int') &
+                cidr_mask_to_ip_int(self.mask_code),
                 stype='int'
             )
             return self._subnet
 
     @property
     def subnet_mask(self):
+        """
+        子网掩码：点分形式
+        :return:
+        """
         try:
             return self._subnet_mask
         except AttributeError:
@@ -79,6 +103,10 @@ class CIDR(object):
 
     @property
     def first_ip_address(self):
+        """
+        第一个可用的ip
+        :return:
+        """
         try:
             return self._first_ip_address
         except AttributeError:
@@ -90,6 +118,10 @@ class CIDR(object):
 
     @property
     def last_ip_address(self):
+        """
+        最后一个可用的ip
+        :return:
+        """
         try:
             return self._last_ip_address
         except AttributeError:
@@ -101,6 +133,10 @@ class CIDR(object):
 
     @property
     def broadcast(self):
+        """
+        广播
+        :return:
+        """
         try:
             return self._broadcast
         except AttributeError:
@@ -224,23 +260,6 @@ def is_ipv4_in_range(ip_str, range_str):
     return True
 
 
-def is_ipv4_not_in_range(ip_str, range_str):
-    """
-    判断一个ip是否不在一个ip范围内
-    :param ip_str:
-    :param range_str:
-    :return:
-    """
-    return not is_ipv4_in_range(ip_str, range_str)
-
-
-private_ipv4_classes = (
-    '10.0.0.0/8',
-    '172.16.0.0/12',
-    '192.168.0.0/16',
-)
-
-
 def is_legal_ipv4(string):
     pass
 
@@ -260,6 +279,7 @@ def ipv4_format(ipv4_str, ftype='b', **kwargs):
         x: 十六进制
     :param kwargs:
         filling: 是否以0填充
+        separator: 分隔符，默认为 '.'
     :return:
     """
     ipv4_check = is_string_ipv4(ipv4_str)
@@ -277,19 +297,21 @@ def ipv4_format(ipv4_str, ftype='b', **kwargs):
             for ip_seg in ip_segs:
                 seg_str = format(int(ip_seg), ftype)
                 if kwargs.get('filling', True):
-                    seg_str = '0' * (len(format(255, ftype)) - len(seg_str)) + seg_str
+                    seg_str = '0' * (len(format(255, ftype)) -
+                                     len(seg_str)) + seg_str
                 res.append(seg_str)
-            return '.'.join(res)
+            separator = kwargs.get('separator', '.')
+            return separator.join(res)
         else:
             raise ValueError('ftype: %s not support' % ftype)
-    raise ValueError('%s not a right IP.' % ipv4_str)
+    raise ValueError('%s not a normal IP.' % ipv4_str)
 
 
 def convert_to_ipv4(source, stype='d'):
     """
     转换为常见的ip地址
     :param source:
-    :param ftype:
+    :param stype:
     :return:
     """
     base_map = {
@@ -314,7 +336,8 @@ def convert_to_ipv4(source, stype='d'):
             raise ValueError('len of source error')
 
     if stype in base_map:
-        segs = [str(int(seg, base=base_map[stype])) for seg in source.split('.')]
+        segs = [str(int(seg, base=base_map[stype]))
+                for seg in source.split('.')]
         ipv4_str = '.'.join(segs)
         check = is_string_ipv4(ipv4_str)
         if check[0]:
@@ -325,16 +348,17 @@ def convert_to_ipv4(source, stype='d'):
         raise ValueError('invalid ftype arg: %s' % stype)
 
 
-def is_ip_in_subnet(ipv4_str, range_str):
+def is_ip_in_subnet(ipv4_str, subnet_str):
     """
     判断ip是否在子网中
     :param ipv4_str:
-    :param range_str: 10.10.10.10/16
+    :param subnet_str: 10.10.10.10/16
     :return:
     """
-    sub_net_ip, mask_code = range_str.split('/')
+    cidr = CIDR(subnet_str)
+    sub_net_ip, mask_code = cidr.ip, cidr.mask_code
     res = (ipv4_format(ipv4_str, ftype='int') &
-           _cidr_mask_to_ip_int(int(mask_code))
+           cidr_mask_to_ip_int(int(mask_code))
            == ipv4_format(sub_net_ip, ftype='int'))
     return res
 
@@ -352,7 +376,7 @@ def is_private_ipv4(ipv4_str):
                 for range_i in private_ipv4_classes])
 
 
-def _cidr_mask_to_ip_int(mask_num):
+def cidr_mask_to_ip_int(mask_num):
     """
     掩码位数转换为整数值
     :param mask_num: 16
@@ -370,4 +394,17 @@ def cidr_mask_to_subnet_mask(mask_num):
     :param mask_num:
     :return:
     """
-    return convert_to_ipv4(_cidr_mask_to_ip_int(mask_num), stype='int')
+    return convert_to_ipv4(cidr_mask_to_ip_int(mask_num), stype='int')
+
+
+def subnet_mask_to_cidr_mask(subnet_mask):
+    """
+    点分掩码转换为掩码位数
+    :param subnet_mask:
+    :return:
+    """
+    subnet_bin = ipv4_format(subnet_mask, ftype='b', separator='')
+    cidr_mask, _, check = subnet_bin.partition('0')
+    if int(check or '0', base=2):
+        raise ValueError('%s is not valid subnet mask.' % subnet_mask)
+    return len(cidr_mask)
