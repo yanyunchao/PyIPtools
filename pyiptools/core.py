@@ -55,6 +55,7 @@ class CIDR(object):
     CIDR, 解释见 https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
 
     cidr = CIDR('10.10.10.10/16')
+    
     cidr = CIDR('10.10.10.10/255.255.0.0')
     """
     def __init__(self, ip_mask):
@@ -77,6 +78,7 @@ class CIDR(object):
     def subnet(self):
         """
         网络
+
         :return:
         """
         try:
@@ -93,6 +95,7 @@ class CIDR(object):
     def subnet_mask(self):
         """
         子网掩码：点分形式
+
         :return:
         """
         try:
@@ -105,6 +108,7 @@ class CIDR(object):
     def first_ip_address(self):
         """
         第一个可用的ip
+
         :return:
         """
         try:
@@ -120,6 +124,7 @@ class CIDR(object):
     def last_ip_address(self):
         """
         最后一个可用的ip
+
         :return:
         """
         try:
@@ -135,6 +140,7 @@ class CIDR(object):
     def broadcast(self):
         """
         广播
+
         :return:
         """
         try:
@@ -154,6 +160,7 @@ class CIDR(object):
 def is_string_ipv4(string):
     """
     判断一个字符串是否符合ipv4地址规则
+
     :param string:  输入的字符串
     :return: (bool, string)
     """
@@ -174,6 +181,7 @@ def is_string_ipv4(string):
 def is_string_ipv6(string):
     """
     判断一个字符串是否符合ipv6地址规则
+
     :param string: 输入的字符串
     :return: (bool, string)
     """
@@ -241,6 +249,7 @@ def is_string_ipv6(string):
 def is_ipv4_in_range(ip_str, range_str):
     """
     判断一个ip是否在一个ip范围内
+
     :param ip_str:
     :param range_str:
     :return:
@@ -271,6 +280,7 @@ def is_legal_ipv6(string):
 def ipv4_format(ipv4_str, ftype='b', **kwargs):
     """
     ip格式化转换
+
     :param ipv4_str:
     :param ftype:
         int: 一个整数
@@ -310,6 +320,7 @@ def ipv4_format(ipv4_str, ftype='b', **kwargs):
 def convert_to_ipv4(source, stype='d'):
     """
     转换为常见的ip地址
+
     :param source:
     :param stype:
     :return:
@@ -351,6 +362,7 @@ def convert_to_ipv4(source, stype='d'):
 def is_ip_in_subnet(ipv4_str, subnet_str):
     """
     判断ip是否在子网中
+
     :param ipv4_str:
     :param subnet_str: 10.10.10.10/16
     :return:
@@ -366,6 +378,7 @@ def is_ip_in_subnet(ipv4_str, subnet_str):
 def is_private_ipv4(ipv4_str):
     """
     是否为一个私有ip
+
     :param ipv4_str:
     :return:
     """
@@ -379,6 +392,7 @@ def is_private_ipv4(ipv4_str):
 def cidr_mask_to_ip_int(mask_num):
     """
     掩码位数转换为整数值
+
     :param mask_num: 16
     :return:
     """
@@ -391,6 +405,7 @@ def cidr_mask_to_ip_int(mask_num):
 def cidr_mask_to_subnet_mask(mask_num):
     """
     掩码位数转换为点分掩码
+
     :param mask_num:
     :return:
     """
@@ -400,6 +415,7 @@ def cidr_mask_to_subnet_mask(mask_num):
 def subnet_mask_to_cidr_mask(subnet_mask):
     """
     点分掩码转换为掩码位数
+
     :param subnet_mask:
     :return:
     """
