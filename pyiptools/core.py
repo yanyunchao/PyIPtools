@@ -282,12 +282,12 @@ def ipv4_format(ipv4_str, ftype='b', **kwargs):
     ip格式化转换
 
     :param ipv4_str:
-    :param ftype:
+    :param ftype: **值的类型**
 
-        int: 一个整数
-        b: 二进制
-        o: 八进制
-        x: 十六进制
+        * int: 一个整数
+        * b: 二进制
+        * o: 八进制
+        * x: 十六进制
     :param kwargs:
         filling: 是否以0填充
         separator: 分隔符，默认为 '.'
