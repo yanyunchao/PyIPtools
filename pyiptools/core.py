@@ -2,7 +2,7 @@
 
 from __future__ import unicode_literals
 
-from pyiptools.utils import int
+from pyiptools.utils import int, IS_WIN, run_cmd
 
 
 private_ipv4_classes = (
@@ -452,3 +452,32 @@ def subnet_mask_to_cidr_mask(subnet_mask):
     if int(check or '0', base=2):
         raise ValueError('%s is not valid subnet mask.' % subnet_mask)
     return len(cidr_mask)
+
+
+def ping(host, **kwargs):
+    """
+    对host执行ping，获取结果
+
+    :param host: ping的目标主机
+    :param kwargs:
+        * count：次数
+        * size：每次发送的字节大小
+    :return: 原始的ping结果
+    """
+    cmd = 'ping'
+    args_map = {
+        'size': ['-s', '-l'],
+        'count': ['-c', '-n'],
+        'ttl': ['-t', '-i']
+    }
+    for k, v in args_map.items():
+        if kwargs.get(k) is not None:
+            cmd += ' %s %s' % (v[IS_WIN], kwargs[k])
+
+    cmd += ' %s' % host
+    std_out, _ = run_cmd(cmd)
+
+    if IS_WIN:
+        return std_out.decode('gbk')
+    else:
+        return std_out
