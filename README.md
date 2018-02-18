@@ -33,6 +33,11 @@ sudo python setup.py install
 >>> c.broadcast
 172.31.255.255
 
+# IPV4
+>>> from iptools import IPV4
+>>> ipv4 = IPV4('10.5.25.30')
+>>> ipv4.to_bin()
+
 # ipv4 format
 >>> from iptools import ipv4_format
 >>> ipv4_format('10.48.240.1')
