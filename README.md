@@ -37,6 +37,7 @@ sudo python setup.py install
 >>> from iptools import IPV4
 >>> ipv4 = IPV4('10.5.25.30')
 >>> ipv4.to_bin()
+00001010.00000101.00011001.00011110
 
 # ipv4 format
 >>> from iptools import ipv4_format
@@ -52,6 +53,11 @@ sudo python setup.py install
 >>> from iptools import is_ip_in_subnet
 >>> is_ip_in_subnet('172.25.32.5', '172.16.0.0/12')
 True
+
+# cidr mask
+>>> from iptools import cidr_mask_to_subnet_mask
+>> cidr_mask_to_subnet_mask(22)
+255.255.252.0
 ```
 
 
