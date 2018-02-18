@@ -298,14 +298,6 @@ def is_ipv4_in_range(ip_str, range_str):
     return True
 
 
-def is_legal_ipv4(string):
-    pass
-
-
-def is_legal_ipv6(string):
-    pass
-
-
 def ipv4_format(ipv4_str, ftype='b', **kwargs):
     """
     ip格式化转换
