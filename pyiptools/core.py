@@ -310,7 +310,7 @@ def ipv4_format(ipv4_str, ftype='b', **kwargs):
         * o: 八进制
         * x: 十六进制
     :param kwargs:
-        * filling: 是否以0填充
+        * filling: 是否以0填充, 默认为True
         * separator: 分隔符，默认为 '.'
     :return: 格式化后的值
     """
@@ -413,8 +413,10 @@ def is_private_ipv4(ipv4_str):
     check = is_string_ipv4(ipv4_str)
     if not check[0]:
         return False
-    return any([is_ip_in_subnet(check[1], range_i)
-                for range_i in private_ipv4_classes])
+
+    return any(([is_ip_in_subnet(check[1], range_i)
+                for range_i in private_ipv4_classes]))
+
 
 
 def cidr_mask_to_ip_int(mask_num):
